@@ -1,0 +1,1 @@
+# Project-on-detect-pixelated-image-and-correct
