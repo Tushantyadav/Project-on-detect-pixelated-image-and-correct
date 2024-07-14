@@ -1,0 +1,43 @@
+import cv2
+from PIL import Image
+import numpy as np
+
+def detect_pixelation(image_path, threshold=15):
+    """
+    Detect if an image is pixelated by checking the variance of Laplacian.
+    The threshold value may need to be adjusted based on specific needs.
+    """
+    image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+    variance_of_laplacian = cv2.Laplacian(image, cv2.CV_64F).var()
+    print(f"Variance of Laplacian: {variance_of_laplacian}")
+    return variance_of_laplacian < threshold
+
+def correct_pixelation(image_path, output_path, scale_factor=2):
+    """
+    Correct pixelation by resizing the image to a larger size and applying a bilateral filter.
+    """
+    image = Image.open(image_path)
+    # Resize the image
+    new_size = (image.width * scale_factor, image.height * scale_factor)
+    image = image.resize(new_size, Image.NEAREST)
+
+    # Convert to OpenCV format
+    open_cv_image = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
+    
+    # Apply a bilateral filter to smooth the image while preserving edges
+    corrected_image = cv2.bilateralFilter(open_cv_image, d=9, sigmaColor=75, sigmaSpace=75)
+    
+    # Convert back to PIL format and save
+    corrected_image = Image.fromarray(cv2.cvtColor(corrected_image, cv2.COLOR_BGR2RGB))
+    corrected_image.save(output_path)
+    print(f"Corrected image saved to {output_path}")
+
+# Example usage
+input_image_path = "C:\\Users\\panka\\Desktop\\parrot1.jpg"
+output_image_path = "C:\\Users\\panka\\Desktop\\parrot2.jpg"
+
+if detect_pixelation(input_image_path):
+    print("Pixelation detected. Correcting...")
+    correct_pixelation(input_image_path, output_image_path)
+else:
+    print("No significant pixelation detected.")
