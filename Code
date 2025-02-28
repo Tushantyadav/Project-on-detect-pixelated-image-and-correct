@@ -1,43 +1,39 @@
+import streamlit as st
 import cv2
 from PIL import Image
 import numpy as np
 
-def detect_pixelation(image_path, threshold=15):
-    """
-    Detect if an image is pixelated by checking the variance of Laplacian.
-    The threshold value may need to be adjusted based on specific needs.
-    """
-    image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
-    variance_of_laplacian = cv2.Laplacian(image, cv2.CV_64F).var()
-    print(f"Variance of Laplacian: {variance_of_laplacian}")
-    return variance_of_laplacian < threshold
+def detect_pixelation(image, threshold=15):
+    gray_image = cv2.cvtColor(np.array(image), cv2.COLOR_BGR2GRAY)
+    variance_of_laplacian = cv2.Laplacian(gray_image, cv2.CV_64F).var()
+    return variance_of_laplacian, variance_of_laplacian < threshold
 
-def correct_pixelation(image_path, output_path, scale_factor=2):
-    """
-    Correct pixelation by resizing the image to a larger size and applying a bilateral filter.
-    """
-    image = Image.open(image_path)
-    # Resize the image
+def correct_pixelation(image, scale_factor=2):
     new_size = (image.width * scale_factor, image.height * scale_factor)
-    image = image.resize(new_size, Image.NEAREST)
-
-    # Convert to OpenCV format
-    open_cv_image = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
-    
-    # Apply a bilateral filter to smooth the image while preserving edges
+    resized_image = image.resize(new_size, Image.NEAREST)
+    open_cv_image = cv2.cvtColor(np.array(resized_image), cv2.COLOR_RGB2BGR)
     corrected_image = cv2.bilateralFilter(open_cv_image, d=9, sigmaColor=75, sigmaSpace=75)
+    return Image.fromarray(cv2.cvtColor(corrected_image, cv2.COLOR_BGR2RGB))
+
+# Title with inline CSS for styling
+st.markdown('<h1 style="color:#4CAF50; font-size:2.5em; font-weight:bold; text-align:center; margin-top:20px;">Pixelation Detection and Correction</h1>', unsafe_allow_html=True)
+st.write("Upload an image to detect and correct pixelation")
+
+uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
+threshold = st.slider("Set pixelation detection threshold", min_value=0, max_value=100, value=15)
+scale_factor = st.slider("Set scale factor for pixelation correction", min_value=1, max_value=5, value=2)
+
+if uploaded_file is not None:
+    image = Image.open(uploaded_file)
+    st.image(image, caption="Uploaded Image", use_column_width=True)
     
-    # Convert back to PIL format and save
-    corrected_image = Image.fromarray(cv2.cvtColor(corrected_image, cv2.COLOR_BGR2RGB))
-    corrected_image.save(output_path)
-    print(f"Corrected image saved to {output_path}")
+    variance, is_pixelated = detect_pixelation(image, threshold)
+    st.markdown(f'<div style="background-color:#FFD700; padding:10px; border-radius:10px; font-size:1.1em; text-align:center; margin-bottom:20px;">Variance of Laplacian: {variance}</div>', unsafe_allow_html=True)
+    
+    if is_pixelated:
+        st.markdown('<div style="color:#FF4500; font-weight:bold; font-size:1.2em; text-align:center; margin:20px 0;">Pixelation detected.</div>', unsafe_allow_html=True)
+        corrected_image = correct_pixelation(image, scale_factor)
+        st.image(corrected_image, caption="Corrected Image", use_column_width=True)
+    else:
+        st.markdown('<div style="color:#32CD32; font-weight:bold; font-size:1.2em; text-align:center; margin:20px 0;">No significant pixelation detected.</div>', unsafe_allow_html=True)
 
-# Example usage
-input_image_path = "C:\\Users\\panka\\Desktop\\parrot1.jpg"
-output_image_path = "C:\\Users\\panka\\Desktop\\parrot2.jpg"
-
-if detect_pixelation(input_image_path):
-    print("Pixelation detected. Correcting...")
-    correct_pixelation(input_image_path, output_image_path)
-else:
-    print("No significant pixelation detected.")
