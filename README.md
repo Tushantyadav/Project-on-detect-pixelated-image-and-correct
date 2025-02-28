@@ -1,7 +1,8 @@
 # Project-on-detect-pixelated-image-and-correct
 Pixelation is a common issue in digital imaging, where the image quality degrades and appears blocky or blurred due to low resolution or high compression levels. This project aims to automate the detection of pixelated areas and apply corrective measures to restore the image's visual fidelity. The solution involves image processing techniques and advanced machine learning models for super-resolution.
 
-*Steps for Detecting Pixelation:
+*Steps for Detecting Pixelation:*
+
                                 1.Image Loading and Preprocessing:Load the image into memory.Convert it to a suitable format for analysis (e.g., grayscale or RGB).
                                  2.Feature Extraction:Extract relevant features that help distinguish between pixelated and non-pixelated regions. This can include:Edge detection using filters like Sobel or Canny.Texture analysis to detect regular patterns indicative of pixelation.Statistical measures such as variance or entropy to capture irregularities.
                                   3.Training Data Preparation (if using machine learning):If employing machine learning techniques, prepare a labeled dataset consisting of pixelated and non-pixelated images.Extract features from these images for training the detection model.
