@@ -9,7 +9,8 @@ Pixelation is a common issue in digital imaging, where the image quality degrade
                                   4.Model Selection and Training:Choose an appropriate model such as SVM, Random Forest, or a neural network (e.g., CNN) for classification.Train the model using the extracted features and labeled dataset.Validate the model to ensure it accurately distinguishes between pixelated and non-pixelated regions.
                                   5.Detection:Apply the trained model to new images to detect pixelated regions.Generate a map or mask indicating areas identified as pixelated.
                                   
-*Steps for Correcting Pixelation:
+*Steps for Correcting Pixelation:*
+
                                   1.Identification of Pixelated Regions:Use the detection results from the previous step to identify which regions of the image are pixelated.
                                   2.Image Restoration Techniques:Choose appropriate techniques based on the level and type of pixelation detected:Filter-based approaches: Apply edge-preserving filters (e.g., bilateral filter) to smooth pixelated regions while preserving edges.Super-resolution methods: Use algorithms (e.g., deep learning-based approaches) to enhance the resolution of pixelated areas.Patch-based methods: Replace pixelated regions with information from neighboring non-pixelated areas or similar patches within the image.
                                   3.Implementation of Correction:Implement the chosen correction techniques on identified pixelated regions of the image.Ensure the correction is applied appropriately without introducing artifacts or distortions.
